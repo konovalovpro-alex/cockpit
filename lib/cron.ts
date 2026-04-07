@@ -52,8 +52,8 @@ export async function syncNotion() {
       body: JSON.stringify({
         filter: {
           or: [
-            { property: 'Status', status: { equals: 'В работе' } },
-            { property: 'Status', status: { equals: 'Запланировано' } },
+            { property: 'Статус', select: { equals: 'В работе' } },
+            { property: 'Статус', select: { equals: 'Запланировано' } },
           ],
         },
       }),
@@ -69,13 +69,14 @@ export async function syncNotion() {
           type: string;
           title?: Array<{ plain_text: string }>;
           status?: { name: string };
+          select?: { name: string };
         }
       }
     }) => {
       const titleProp = Object.values(page.properties).find((p) => p.type === 'title')
       const title = titleProp?.title?.[0]?.plain_text || 'Без названия'
-      const statusProp = page.properties['Status'] || page.properties['Статус']
-      const status = statusProp?.status?.name || ''
+      const statusProp = page.properties['Статус']
+      const status = statusProp?.select?.name || ''
       return { id: page.id, title, status, url: page.url }
     })
 
