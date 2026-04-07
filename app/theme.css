@@ -1,0 +1,31 @@
+/* Cockpit visual tokens — all UI constants go here */
+
+:root {
+  /* Layout */
+  --cockpit-padding: 2rem;
+  --cockpit-max-width: 1600px;
+  --cockpit-col-gap: 1rem;
+
+  /* Pin icon palette — muted dark backgrounds */
+  --pin-purple-bg: #3C3489;
+  --pin-purple-text: #EEEDFE;
+  --pin-blue-bg: #0C447C;
+  --pin-blue-text: #E6F1FB;
+  --pin-teal-bg: #085041;
+  --pin-teal-text: #E1F5EE;
+  --pin-amber-bg: #633806;
+  --pin-amber-text: #FEF3C7;
+  --pin-coral-bg: #712B13;
+  --pin-coral-text: #FEE2E2;
+  --pin-gray-bg: #2C2C2A;
+  --pin-gray-text: #F3F4F6;
+
+  /* Progress bar colors — muted mid-tones */
+  --bar-purple: #7F77DD;
+  --bar-teal: #5DCAA5;
+  --bar-coral: #F0997B;
+  --bar-blue: #85B7EB;
+
+  /* Pin icon size */
+  --pin-size: 34px;
+}
