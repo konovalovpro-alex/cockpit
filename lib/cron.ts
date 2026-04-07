@@ -5,23 +5,24 @@ export async function syncTodoist() {
   if (!TODOIST_TOKEN) return
 
   try {
-    const today = new Date().toISOString().split('T')[0]
     const res = await fetch(
-      `https://api.todoist.com/rest/v2/tasks?filter=today|overdue`,
+      `https://api.todoist.com/api/v1/tasks?filter=today`,
       { headers: { Authorization: `Bearer ${TODOIST_TOKEN}` } }
     )
     if (!res.ok) return
-    const tasks = await res.json()
+    const body = await res.json()
+    const tasks: { project_id?: string; [key: string]: unknown }[] = body.results ?? body
 
     // Enrich with project names
-    const projectsRes = await fetch('https://api.todoist.com/rest/v2/projects', {
+    const projectsRes = await fetch('https://api.todoist.com/api/v1/projects', {
       headers: { Authorization: `Bearer ${TODOIST_TOKEN}` },
     })
-    const projects = projectsRes.ok ? await projectsRes.json() : []
+    const projectsBody = projectsRes.ok ? await projectsRes.json() : { results: [] }
+    const projects: { id: string; name: string }[] = projectsBody.results ?? projectsBody
     const projectMap: Record<string, string> = {}
     for (const p of projects) projectMap[p.id] = p.name
 
-    const enriched = tasks.map((t: { project_id?: string; [key: string]: unknown }) => ({
+    const enriched = tasks.map((t) => ({
       ...t,
       project_name: t.project_id ? projectMap[t.project_id] : null,
     }))

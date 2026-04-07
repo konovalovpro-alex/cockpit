@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   const { content } = await request.json()
   if (!content) return Response.json({ error: 'content is required' }, { status: 400 })
 
-  const res = await fetch('https://api.todoist.com/rest/v2/tasks', {
+  const res = await fetch('https://api.todoist.com/api/v1/tasks', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${TODOIST_TOKEN}`,
