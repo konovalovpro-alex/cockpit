@@ -1,0 +1,15 @@
+services:
+  cockpit:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3013:3000"
+    volumes:
+      - cockpit-data:/data
+    env_file:
+      - .env
+    environment:
+      - DATA_DIR=/data
+
+volumes:
+  cockpit-data:
