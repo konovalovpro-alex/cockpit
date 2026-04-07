@@ -3,7 +3,7 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - "3013:3000"
+      - "3014:3000"
     volumes:
       - cockpit-data:/data
     env_file:
