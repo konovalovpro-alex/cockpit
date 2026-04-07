@@ -4,7 +4,7 @@ import { Server } from 'lucide-react'
 
 export function ServerWidget() {
   return (
-    <div className="rounded-lg border border-dashed border-border p-3">
+    <div className="rounded-lg border border-border p-3">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Server size={14} className="text-muted-foreground" />

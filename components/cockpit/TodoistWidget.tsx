@@ -5,10 +5,10 @@ import { CheckSquare, RefreshCw } from 'lucide-react'
 import type { TodoistTask } from '@/types'
 
 const PRIORITY_COLORS: Record<number, string> = {
-  4: 'bg-red-500',     // P1
-  3: 'bg-orange-400',  // P2
-  2: 'bg-blue-400',    // P3
-  1: 'bg-muted',       // P4
+  4: 'bg-red-500',
+  3: 'bg-orange-400',
+  2: 'bg-blue-400',
+  1: 'bg-muted-foreground/40',
 }
 
 export function TodoistWidget() {
@@ -39,10 +39,11 @@ export function TodoistWidget() {
           <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
         </button>
       </div>
-      <div className="space-y-1.5 max-h-48 overflow-y-auto">
+      {/* max-height 320px */}
+      <div className="space-y-1.5 overflow-y-auto" style={{ maxHeight: '320px' }}>
         {tasks.map((task) => (
           <div key={task.id} className="flex items-start gap-2">
-            <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS[1]}`} />
+            <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${PRIORITY_COLORS[task.priority] ?? PRIORITY_COLORS[1]}`} />
             <div className="flex-1 min-w-0">
               <div className="text-xs leading-tight">{task.content}</div>
               {task.project_name && (

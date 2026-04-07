@@ -6,7 +6,7 @@ export async function syncTodoist() {
 
   try {
     const res = await fetch(
-      `https://api.todoist.com/api/v1/tasks?filter=today`,
+      `https://api.todoist.com/api/v1/tasks?filter=${encodeURIComponent('today | overdue')}`,
       { headers: { Authorization: `Bearer ${TODOIST_TOKEN}` } }
     )
     if (!res.ok) return

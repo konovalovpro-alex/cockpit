@@ -13,21 +13,30 @@ export default function CockpitPage() {
     <div className="flex flex-col h-screen">
       <TopBar />
       <ContextBar />
-      <div className="flex flex-1 min-h-0">
-        {/* Left column — 2/3 */}
-        <div className="flex-[2] min-w-0 flex flex-col gap-4 p-4 overflow-y-auto border-r border-border">
-          <PinsBlock />
-          <LinksBlock />
-          <SpacesBlock />
-        </div>
-        {/* Right column — 1/3 */}
-        <div className="flex-[1] min-w-0 flex flex-col gap-3 p-4 overflow-y-auto">
-          <TodoistWidget />
-          <NotionWidget />
-          <ProjectsWidget />
-          <ServerWidget />
+
+      {/* Main content — padding 32px, max-width 1600px centered */}
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <div
+          className="h-full flex gap-4 mx-auto"
+          style={{ padding: 'var(--cockpit-padding)', maxWidth: 'var(--cockpit-max-width)' }}
+        >
+          {/* Left column — 2/3 */}
+          <div className="flex-[2] min-w-0 flex flex-col gap-4 overflow-y-auto pr-2">
+            <PinsBlock />
+            <LinksBlock />
+            <SpacesBlock />
+          </div>
+
+          {/* Right column — 1/3 */}
+          <div className="flex-[1] min-w-0 flex flex-col gap-3 overflow-y-auto">
+            <TodoistWidget />
+            <NotionWidget />
+            <ProjectsWidget />
+            <ServerWidget />
+          </div>
         </div>
       </div>
+
       <FABButtons />
     </div>
   )

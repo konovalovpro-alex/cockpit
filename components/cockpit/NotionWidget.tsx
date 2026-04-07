@@ -32,10 +32,11 @@ export function NotionWidget() {
           <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
         </button>
       </div>
-      <div className="space-y-1.5 max-h-48 overflow-y-auto">
+      {/* max-height 320px */}
+      <div className="space-y-1.5 overflow-y-auto" style={{ maxHeight: '320px' }}>
         {tasks.map((task) => (
           <div key={task.id} className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-400/70 flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="text-xs truncate">{task.title}</div>
             </div>
