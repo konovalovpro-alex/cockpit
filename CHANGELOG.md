@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/)
 
 ## [Unreleased]
 
+### Added (CRUD · раунд 4)
+- PUT /api/links/[id] — редактирование ссылки с пересчётом тегов (транзакция)
+- DELETE /api/links/[id] — удаление с возвратом объекта для undo
+- POST /api/links/restore — восстановление удалённой ссылки с тем же id
+- LinksBlock: hover-иконки Pencil/Trash2 на каждой строке
+- LinksBlock: удаление с undo-toast (5 сек, sonner) и оптимистичным обновлением
+- PinsBlock: режим редактирования (Pencil в шапке), wiggle-анимация плиток
+- PinsBlock: крестик-кнопка «открепить» с анимацией scale(0)
+- LinkForm вынесен в отдельный файл components/cockpit/LinkForm.tsx
+
 ### Changed (UI раунд 3 — полировка и интерактив)
 - **Fullscreen layout**: `html, body` — `height: 100vh; overflow: hidden`, все скроллбары скрыты глобально (`scrollbar-width: none`, `::-webkit-scrollbar { display: none }`)
 - **page.tsx**: TopBar и ContextBar — `flexShrink: 0`; main-область — `flex: 1; minHeight: 0`. Левая колонка: PinsBlock shrink-0, LinksBlock `flex: 1` (растягивается), SpacesBlock shrink-0. Правая колонка: TodoistWidget и NotionWidget — `flex: 1`, ProjectsWidget и ServerWidget — `flexShrink: 0`
