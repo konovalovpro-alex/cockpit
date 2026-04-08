@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/cockpit/ThemeProvider'
 import { SpaceProvider } from '@/components/cockpit/SpaceContext'
+import { Toaster } from 'sonner'
 
 const inter = Inter({ variable: '--font-inter', subsets: ['latin', 'cyrillic'], weight: ['400', '500', '600'] })
 
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
           </SpaceProvider>
         </ThemeProvider>
+        <Toaster richColors position="bottom-right" />
       </body>
     </html>
   )
