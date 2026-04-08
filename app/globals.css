@@ -130,3 +130,22 @@
     @apply font-sans;
   }
 }
+
+@keyframes pinWiggle {
+  0%, 100% { transform: rotate(-0.5deg); }
+  50%       { transform: rotate(0.5deg); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pin-tile--editing {
+    animation: pinWiggle 300ms ease-in-out infinite;
+  }
+}
+
+.pin-tile--editing {
+  border: 1px dashed var(--border-strong) !important;
+}
+
+.pin-tile--editing:nth-child(2n) { animation-delay: 50ms; }
+.pin-tile--editing:nth-child(3n) { animation-delay: 100ms; }
+.pin-tile--editing:nth-child(4n) { animation-delay: 150ms; }
