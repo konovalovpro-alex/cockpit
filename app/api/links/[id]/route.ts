@@ -42,6 +42,18 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const db = getDb()
+
+  const link = db.prepare(`SELECT * FROM links WHERE id = ?`).get(Number(id))
+  if (!link) return Response.json({ error: 'Not found' }, { status: 404 })
+
+  const tags = db.prepare(`
+    SELECT t.* FROM tags t JOIN link_tags lt ON t.id = lt.tag_id WHERE lt.link_id = ?
+  `).all(Number(id)) as { id: number; name: string; color?: string }[]
+
+  const spaceRows = db.prepare(`SELECT space_id FROM space_links WHERE link_id = ?`).all(Number(id)) as { space_id: number }[]
+  const spaceIds = spaceRows.map((r) => r.space_id)
+
   db.prepare(`DELETE FROM links WHERE id = ?`).run(Number(id))
-  return Response.json({ success: true })
+
+  return Response.json({ ok: true, deletedLink: { ...(link as object), tags, spaceIds } })
 }
