@@ -5,6 +5,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/)
 
 ## [Unreleased]
 
+### Changed (UI раунд 2 — Stitch redesign)
+- Inter font (400/500/600) via `next/font/google` с поддержкой кириллицы
+- Полный переезд `theme.css`: dark (#0A0A0B) + light (#F2F2F7), токены `--bg-*`, `--text-*`, `--accent`, `--priority-*`, `--progress-*`
+- Система тем переключена на `data-theme` атрибут (вместо `.dark` класса), добавлен FOUC-скрипт в `<head>`
+- `ThemeProvider`: toggle light/dark, читает атрибут из HTML (set by FOUC script)
+- `TopBar`: приветствие с учётом времени суток (утро/день/вечер/ночь), время 20px, кнопка темы 32×32px круглая
+- `PinsBlock`: плитки 56×56px, Google Favicon API (28px), 6-колоночная сетка
+- `LinksBlock`: фавиконки 20×20px, домен под названием, tag badge справа, все цвета через CSS-переменные
+- `SpacesBlock`: 2-колоночная сетка, emoji в правом верхнем углу, hover translateY(-1px)
+- `TodoistWidget`: приоритет — outlined круг (border, не fill), метка priority+project под задачей
+- `NotionWidget`: Square иконка из lucide, max-height 320px
+- `ProjectsWidget`: прогресс-бары 3px, бейдж MVP·PLACEHOLDER, переменные `--progress-*`
+- `ServerWidget`: 3-колоночная сетка CPU/RAM/DISK, сервисная строка внизу
+- `FABButtons`: accent-кнопка заметки + gray-кнопка задачи, glow-тень, Check вместо CheckSquare
+- `page.tsx`: inline styles вместо Tailwind для layout wrapper
+
 ### Changed
 - [UI раунд 1] Визуальные токены вынесены в `app/theme.css` (CSS-переменные)
 - [UI раунд 1 · п.1] Padding 32px + max-width 1600px на основной контейнер
