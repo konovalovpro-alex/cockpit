@@ -78,6 +78,30 @@ function migrate(db: Database.Database) {
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS cache_todoist_p1 (
+      id INTEGER PRIMARY KEY,
+      data TEXT,
+      updated_at TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS cache_todoist_inbox (
+      id INTEGER PRIMARY KEY,
+      data TEXT,
+      updated_at TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS cache_todoist_week (
+      id INTEGER PRIMARY KEY,
+      data TEXT,
+      updated_at TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS cache_todoist_all (
+      id INTEGER PRIMARY KEY,
+      data TEXT,
+      updated_at TEXT
+    );
+
     CREATE TABLE IF NOT EXISTS cache_notion_tasks (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       data TEXT NOT NULL,
@@ -90,4 +114,9 @@ function migrate(db: Database.Database) {
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
   `)
+
+  // Initialize preset cache rows
+  for (const table of ['cache_todoist_p1', 'cache_todoist_inbox', 'cache_todoist_week', 'cache_todoist_all']) {
+    db.prepare(`INSERT OR IGNORE INTO ${table} (id, data, updated_at) VALUES (1, '[]', datetime('now'))`).run()
+  }
 }

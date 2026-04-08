@@ -18,22 +18,47 @@ function priorityLabel(p: number) {
   return 'PRIORITY 4'
 }
 
+const PRESETS = [
+  { id: 'today', label: 'Сегодня' },
+  { id: 'p1',    label: 'P1' },
+  { id: 'inbox', label: 'Inbox' },
+  { id: 'week',  label: 'Неделя' },
+  { id: 'all',   label: 'Все' },
+] as const
+
+type PresetId = typeof PRESETS[number]['id']
+
 export function TodoistWidget() {
   const [tasks, setTasks] = useState<TodoistTask[]>([])
   const [updatedAt, setUpdatedAt] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [closingTasks, setClosingTasks] = useState<Set<string>>(new Set())
+  const [preset, setPreset] = useState<PresetId>('today')
 
-  const fetchTasks = async () => {
+  // Load preset from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('cockpit.todoist.preset') as PresetId | null
+      if (saved && PRESETS.some(p => p.id === saved)) setPreset(saved)
+    } catch {}
+  }, [])
+
+  const fetchTasks = async (p?: PresetId) => {
     setLoading(true)
-    const r = await fetch('/api/todoist')
+    const currentPreset = p ?? preset
+    const r = await fetch(`/api/todoist/tasks?preset=${currentPreset}`)
     const data = await r.json()
     setTasks(data.tasks || [])
     setUpdatedAt(data.updated_at)
     setLoading(false)
   }
 
-  useEffect(() => { fetchTasks() }, [])
+  useEffect(() => { fetchTasks() }, [preset])
+
+  const handlePresetChange = (p: PresetId) => {
+    setPreset(p)
+    try { localStorage.setItem('cockpit.todoist.preset', p) } catch {}
+  }
 
   const handleClose = async (taskId: string) => {
     // Start fade-out animation
@@ -57,34 +82,48 @@ export function TodoistWidget() {
         body: JSON.stringify({ task_id: taskId }),
       })
       if (!res.ok) {
-        // Revert
-        const r = await fetch('/api/todoist')
-        const data = await r.json()
-        setTasks(data.tasks || [])
+        await fetchTasks()
         toast.error('Не удалось закрыть задачу')
       }
     } catch {
-      const r = await fetch('/api/todoist')
-      const data = await r.json()
-      setTasks(data.tasks || [])
+      await fetchTasks()
       toast.error('Ошибка при закрытии задачи')
     }
   }
 
+  const currentPresetLabel = PRESETS.find(p => p.id === preset)?.label.toUpperCase() || 'СЕГОДНЯ'
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-card)', backgroundImage: 'var(--tint-todoist)', border: '1px solid var(--border-todoist)', borderRadius: 'var(--radius-card)', padding: 'var(--space-card)', boxSizing: 'border-box' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexShrink: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: 'var(--text-label)', textTransform: 'uppercase' }}>Todoist · сегодня</span>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: 'var(--text-label)', textTransform: 'uppercase' }}>TODOIST · {currentPresetLabel}</span>
           <span style={{ fontSize: 11, color: 'var(--text-muted)', background: 'var(--bg-tile)', padding: '1px 7px', borderRadius: 999 }}>{tasks.length}</span>
         </div>
         <button
-          onClick={fetchTasks}
+          onClick={() => fetchTasks()}
           disabled={loading}
           style={{ padding: 4, borderRadius: 6, background: 'var(--bg-tile)', border: '1px solid var(--border-default)', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
         >
           <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
         </button>
+      </div>
+
+      {/* Preset pills */}
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10, flexShrink: 0 }}>
+        {PRESETS.map(p => (
+          <button key={p.id} onClick={() => handlePresetChange(p.id)}
+            style={{
+              padding: '3px 10px', borderRadius: 999, fontSize: 11, cursor: 'pointer',
+              background: preset === p.id ? 'var(--accent)' : 'transparent',
+              border: `1px solid ${preset === p.id ? 'var(--accent)' : 'var(--border-default)'}`,
+              color: preset === p.id ? 'var(--accent-on)' : 'var(--text-muted)',
+              transition: 'all 0.15s',
+            }}
+          >
+            {p.label}
+          </button>
+        ))}
       </div>
 
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
@@ -125,7 +164,7 @@ export function TodoistWidget() {
           )
         })}
         {tasks.length === 0 && !loading && (
-          <div style={{ fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', padding: '24px 0' }}>Задач на сегодня нет</div>
+          <div style={{ fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', padding: '24px 0' }}>Задач нет</div>
         )}
       </div>
 

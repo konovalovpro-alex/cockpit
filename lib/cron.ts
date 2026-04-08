@@ -1,19 +1,37 @@
 import { getDb } from './db'
 
+const PRESET_FILTERS: Record<string, string> = {
+  today: 'today | overdue',
+  p1:    'p1',
+  inbox: '#Inbox & no date',
+  week:  '7 days',
+  all:   'view all',
+}
+
+const PRESET_TABLES: Record<string, string> = {
+  today: 'cache_todoist_today',
+  p1:    'cache_todoist_p1',
+  inbox: 'cache_todoist_inbox',
+  week:  'cache_todoist_week',
+  all:   'cache_todoist_all',
+}
+
+async function fetchTodoistPreset(token: string, filter: string): Promise<{ project_id?: string; [key: string]: unknown }[]> {
+  const res = await fetch(
+    `https://api.todoist.com/api/v1/tasks?filter=${encodeURIComponent(filter)}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  )
+  if (!res.ok) return []
+  const body = await res.json()
+  return body.results ?? body
+}
+
 export async function syncTodoist() {
   const TODOIST_TOKEN = process.env.TODOIST_TOKEN
   if (!TODOIST_TOKEN) return
 
   try {
-    const res = await fetch(
-      `https://api.todoist.com/api/v1/tasks?filter=${encodeURIComponent('today | overdue')}`,
-      { headers: { Authorization: `Bearer ${TODOIST_TOKEN}` } }
-    )
-    if (!res.ok) return
-    const body = await res.json()
-    const tasks: { project_id?: string; [key: string]: unknown }[] = body.results ?? body
-
-    // Enrich with project names
+    // Fetch project names once
     const projectsRes = await fetch('https://api.todoist.com/api/v1/projects', {
       headers: { Authorization: `Bearer ${TODOIST_TOKEN}` },
     })
@@ -22,15 +40,24 @@ export async function syncTodoist() {
     const projectMap: Record<string, string> = {}
     for (const p of projects) projectMap[p.id] = p.name
 
-    const enriched = tasks.map((t) => ({
-      ...t,
-      project_name: t.project_id ? projectMap[t.project_id] : null,
-    }))
-
     const db = getDb()
-    db.prepare(`DELETE FROM cache_todoist_today`).run()
-    db.prepare(`INSERT INTO cache_todoist_today (data) VALUES (?)`).run(JSON.stringify(enriched))
-    console.log(`[cron] Todoist synced: ${enriched.length} tasks`)
+
+    for (const [preset, filter] of Object.entries(PRESET_FILTERS)) {
+      const tasks = await fetchTodoistPreset(TODOIST_TOKEN, filter)
+      const enriched = tasks.map((t) => ({
+        ...t,
+        project_name: t.project_id ? projectMap[t.project_id] : null,
+      }))
+
+      const table = PRESET_TABLES[preset]
+      if (preset === 'today') {
+        db.prepare(`DELETE FROM ${table}`).run()
+        db.prepare(`INSERT INTO ${table} (data) VALUES (?)`).run(JSON.stringify(enriched))
+      } else {
+        db.prepare(`INSERT OR REPLACE INTO ${table} (id, data, updated_at) VALUES (1, ?, datetime('now'))`).run(JSON.stringify(enriched))
+      }
+      console.log(`[cron] Todoist [${preset}] synced: ${enriched.length} tasks`)
+    }
   } catch (e) {
     console.error('[cron] Todoist sync error:', e)
   }
