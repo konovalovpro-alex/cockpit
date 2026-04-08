@@ -1,5 +1,20 @@
 :root {
   --font-sans: var(--font-inter), Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Card tints — light theme (low opacity) */
+  --tint-pinned:    linear-gradient(135deg, rgba(167,139,250,0.025), transparent 60%);
+  --tint-links:     linear-gradient(135deg, rgba(99,102,241,0.025), transparent 60%);
+  --tint-spaces:    linear-gradient(135deg, rgba(52,211,153,0.025), transparent 60%);
+  --tint-todoist:   linear-gradient(135deg, rgba(239,68,68,0.025), transparent 60%);
+  --tint-notion:    linear-gradient(135deg, rgba(0,0,0,0.02), transparent 60%);
+  --tint-projects:  linear-gradient(135deg, rgba(245,158,11,0.025), transparent 60%);
+  --tint-server:    linear-gradient(135deg, rgba(16,185,129,0.025), transparent 60%);
+  --border-pinned:   rgba(167,139,250,0.10);
+  --border-links:    rgba(99,102,241,0.10);
+  --border-spaces:   rgba(52,211,153,0.10);
+  --border-todoist:  rgba(239,68,68,0.10);
+  --border-notion:   rgba(0,0,0,0.08);
+  --border-projects: rgba(245,158,11,0.10);
+  --border-server:   rgba(16,185,129,0.10);
   --radius-card: 14px;
   --radius-tile: 10px;
   --radius-pill: 999px;
@@ -9,10 +24,10 @@
   --max-width: 1600px;
 }
 [data-theme='dark'] {
-  --bg-page: #0A0A0B;
-  --bg-card: #0F0F11;
-  --bg-card-hover: #14141A;
-  --bg-tile: #1A1A20;
+  --bg-page: #0B0A12;
+  --bg-card: #11101A;
+  --bg-card-hover: #16151F;
+  --bg-tile: #16151F;
   --border-default: #1F1F26;
   --border-strong: #2A2A33;
   --text-primary: #F0F0F5;
@@ -31,6 +46,21 @@
   --progress-coral: #F0997B;
   --progress-blue: #85B7EB;
   --glow: radial-gradient(ellipse at 75% 0%, rgba(99,102,241,0.06) 0%, transparent 60%);
+  /* Card tints — dark theme */
+  --tint-pinned:    linear-gradient(135deg, rgba(167,139,250,0.04), transparent 60%);
+  --tint-links:     linear-gradient(135deg, rgba(99,102,241,0.04), transparent 60%);
+  --tint-spaces:    linear-gradient(135deg, rgba(52,211,153,0.04), transparent 60%);
+  --tint-todoist:   linear-gradient(135deg, rgba(239,68,68,0.04), transparent 60%);
+  --tint-notion:    linear-gradient(135deg, rgba(255,255,255,0.03), transparent 60%);
+  --tint-projects:  linear-gradient(135deg, rgba(245,158,11,0.04), transparent 60%);
+  --tint-server:    linear-gradient(135deg, rgba(16,185,129,0.04), transparent 60%);
+  --border-pinned:   rgba(167,139,250,0.12);
+  --border-links:    rgba(99,102,241,0.12);
+  --border-spaces:   rgba(52,211,153,0.12);
+  --border-todoist:  rgba(239,68,68,0.12);
+  --border-notion:   rgba(255,255,255,0.10);
+  --border-projects: rgba(245,158,11,0.12);
+  --border-server:   rgba(16,185,129,0.12);
 }
 [data-theme='light'] {
   --bg-page: #F2F2F7;
@@ -72,3 +102,5 @@ html, body { height: 100vh; overflow: hidden; }
 *::-webkit-scrollbar { display: none; }
 /* Fade-out mask for scrollable lists */
 .scroll-fade { mask-image: linear-gradient(to bottom, black 85%, transparent 100%); }
+/* ContextBar "open all" button hover */
+.open-all-btn:hover { background: var(--accent) !important; color: #fff !important; }

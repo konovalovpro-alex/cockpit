@@ -143,7 +143,7 @@ export function LinksBlock() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', padding: 'var(--space-card)', boxSizing: 'border-box' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-card)', backgroundImage: 'var(--tint-links)', border: '1px solid var(--border-links)', borderRadius: 'var(--radius-card)', padding: 'var(--space-card)', boxSizing: 'border-box' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -170,15 +170,14 @@ export function LinksBlock() {
           </button>
           {tags.map((tag) => {
             const isActive = activeTag === tag.id
-            const tagColor = tag.color || 'var(--accent)'
             return (
               <button
                 key={tag.id}
                 onClick={() => setActiveTag(isActive ? null : tag.id)}
                 style={{
                   padding: '3px 10px', borderRadius: 999, fontSize: 11, cursor: 'pointer',
-                  background: isActive ? tagColor : 'transparent',
-                  border: `1px solid ${isActive ? tagColor : tag.color || 'var(--border-default)'}`,
+                  background: isActive ? 'var(--accent)' : 'transparent',
+                  border: `1px solid ${isActive ? 'var(--accent)' : tag.color || 'var(--border-default)'}`,
                   color: isActive ? '#fff' : tag.color || 'var(--text-muted)',
                   transition: 'all 0.15s',
                 }}

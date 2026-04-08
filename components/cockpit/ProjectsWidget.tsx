@@ -8,7 +8,7 @@ const PROJECTS = [
 
 export function ProjectsWidget() {
   return (
-    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', padding: 'var(--space-card)' }}>
+    <div style={{ background: 'var(--bg-card)', backgroundImage: 'var(--tint-projects)', border: '1px solid var(--border-projects)', borderRadius: 'var(--radius-card)', padding: 'var(--space-card)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
         <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: 'var(--text-label)', textTransform: 'uppercase' }}>Активные проекты</span>
         <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', background: 'var(--bg-tile)', border: '1px solid var(--border-default)', borderRadius: 999, padding: '2px 8px', letterSpacing: '0.05em' }}>MVP · PLACEHOLDER</span>
