@@ -1,29 +1,23 @@
 'use client'
 
-import { Server } from 'lucide-react'
-
 export function ServerWidget() {
   return (
-    <div className="rounded-lg border border-border p-3">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <Server size={14} className="text-muted-foreground" />
-          <h3 className="text-sm font-semibold text-muted-foreground">Сервер</h3>
-        </div>
-        <span className="text-xs bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">MVP · заглушка</span>
+    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', padding: 'var(--space-card)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: 'var(--text-label)', textTransform: 'uppercase' }}>Сервер</span>
+        <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', background: 'var(--bg-tile)', border: '1px solid var(--border-default)', borderRadius: 999, padding: '2px 8px', letterSpacing: '0.05em' }}>MVP · PLACEHOLDER</span>
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        {[
-          { label: 'CPU', value: '—' },
-          { label: 'RAM', value: '—' },
-          { label: 'Nginx', value: '—' },
-          { label: 'Services', value: '—' },
-        ].map((item) => (
-          <div key={item.label} className="flex justify-between items-center text-xs text-muted-foreground">
-            <span>{item.label}</span>
-            <span className="font-mono">{item.value}</span>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 12 }}>
+        {['CPU', 'RAM', 'DISK'].map(label => (
+          <div key={label} style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-label)' }}>{label}</div>
+            <div style={{ fontSize: 18, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 4 }}>—</div>
           </div>
         ))}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--border-strong)', flexShrink: 0 }} />
+        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>nginx · docker · notion-api</span>
       </div>
     </div>
   )

@@ -10,25 +10,19 @@ import { FABButtons } from '@/components/cockpit/FABButtons'
 
 export default function CockpitPage() {
   return (
-    <div className="flex flex-col h-screen">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <TopBar />
       <ContextBar />
-
-      {/* Main content — padding 32px, max-width 1600px centered */}
-      <div className="flex-1 min-h-0 overflow-hidden">
-        <div
-          className="h-full flex gap-4 mx-auto"
-          style={{ padding: 'var(--cockpit-padding)', maxWidth: 'var(--cockpit-max-width)' }}
-        >
-          {/* Left column — 2/3 */}
-          <div className="flex-[2] min-w-0 flex flex-col gap-4 overflow-y-auto pr-2">
+      <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        <div style={{ height: '100%', display: 'flex', gap: 'var(--space-gap)', padding: 'var(--space-page)', maxWidth: 'var(--max-width)', margin: '0 auto' }}>
+          {/* Left 2fr */}
+          <div style={{ flex: 2, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'var(--space-gap)', overflowY: 'auto' }}>
             <PinsBlock />
             <LinksBlock />
             <SpacesBlock />
           </div>
-
-          {/* Right column — 1/3 */}
-          <div className="flex-[1] min-w-0 flex flex-col gap-3 overflow-y-auto">
+          {/* Right 1fr */}
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'var(--space-gap)', overflowY: 'auto' }}>
             <TodoistWidget />
             <NotionWidget />
             <ProjectsWidget />
@@ -36,7 +30,6 @@ export default function CockpitPage() {
           </div>
         </div>
       </div>
-
       <FABButtons />
     </div>
   )

@@ -1,31 +1,73 @@
-/* Cockpit visual tokens — all UI constants go here */
-
 :root {
-  /* Layout */
-  --cockpit-padding: 2rem;
-  --cockpit-max-width: 1600px;
-  --cockpit-col-gap: 1rem;
-
-  /* Pin icon palette — muted dark backgrounds */
-  --pin-purple-bg: #3C3489;
-  --pin-purple-text: #EEEDFE;
-  --pin-blue-bg: #0C447C;
-  --pin-blue-text: #E6F1FB;
-  --pin-teal-bg: #085041;
-  --pin-teal-text: #E1F5EE;
-  --pin-amber-bg: #633806;
-  --pin-amber-text: #FEF3C7;
-  --pin-coral-bg: #712B13;
-  --pin-coral-text: #FEE2E2;
-  --pin-gray-bg: #2C2C2A;
-  --pin-gray-text: #F3F4F6;
-
-  /* Progress bar colors — muted mid-tones */
-  --bar-purple: #7F77DD;
-  --bar-teal: #5DCAA5;
-  --bar-coral: #F0997B;
-  --bar-blue: #85B7EB;
-
-  /* Pin icon size */
-  --pin-size: 34px;
+  --font-sans: var(--font-inter), Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --radius-card: 14px;
+  --radius-tile: 10px;
+  --radius-pill: 999px;
+  --space-page: 28px;
+  --space-card: 16px;
+  --space-gap: 14px;
+  --max-width: 1600px;
 }
+[data-theme='dark'] {
+  --bg-page: #0A0A0B;
+  --bg-card: #0F0F11;
+  --bg-card-hover: #14141A;
+  --bg-tile: #1A1A20;
+  --border-default: #1F1F26;
+  --border-strong: #2A2A33;
+  --text-primary: #F0F0F5;
+  --text-secondary: #A8A8B3;
+  --text-muted: #5A5A65;
+  --text-label: #5A5A65;
+  --accent: #6366F1;
+  --accent-hover: #7C7FF2;
+  --accent-on: #FFFFFF;
+  --accent-glow: rgba(99,102,241,0.25);
+  --priority-1: #EF4444;
+  --priority-2: #F59E0B;
+  --priority-3: #5A5A65;
+  --progress-purple: #7F77DD;
+  --progress-teal: #5DCAA5;
+  --progress-coral: #F0997B;
+  --progress-blue: #85B7EB;
+  --glow: radial-gradient(ellipse at 75% 0%, rgba(99,102,241,0.06) 0%, transparent 60%);
+}
+[data-theme='light'] {
+  --bg-page: #F2F2F7;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F8F8FC;
+  --bg-tile: #F2F2F7;
+  --border-default: #E4E4EA;
+  --border-strong: #C8C8D0;
+  --text-primary: #0A0A0F;
+  --text-secondary: #4A4A55;
+  --text-muted: #8A8A98;
+  --text-label: #8A8A98;
+  --accent: #5B5BF0;
+  --accent-hover: #4A4ADB;
+  --accent-on: #FFFFFF;
+  --accent-glow: rgba(91,91,240,0.15);
+  --priority-1: #DC2626;
+  --priority-2: #D97706;
+  --priority-3: #9CA3AF;
+  --progress-purple: #6366F1;
+  --progress-teal: #10B981;
+  --progress-coral: #F472B6;
+  --progress-blue: #3B82F6;
+  --glow: none;
+}
+body {
+  background: var(--bg-page);
+  background-image: var(--glow);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
+/* Fade-out mask for scrollable lists */
+.scroll-fade { mask-image: linear-gradient(to bottom, black 85%, transparent 100%); }

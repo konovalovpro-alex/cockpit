@@ -1,41 +1,27 @@
 'use client'
-
 import { createContext, useContext, useEffect, useState } from 'react'
 
-type Theme = 'light' | 'dark' | 'auto'
-
-interface ThemeContextValue {
-  theme: Theme
-  setTheme: (t: Theme) => void
-}
-
-const ThemeContext = createContext<ThemeContextValue>({ theme: 'auto', setTheme: () => {} })
+type Theme = 'dark' | 'light'
+interface ThemeContextValue { theme: Theme; setTheme: (t: Theme) => void; toggle: () => void }
+const ThemeContext = createContext<ThemeContextValue>({ theme: 'dark', setTheme: () => {}, toggle: () => {} })
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('auto')
+  const [theme, setThemeState] = useState<Theme>('dark')
 
   useEffect(() => {
-    const saved = localStorage.getItem('cockpit-theme') as Theme | null
-    if (saved) setThemeState(saved)
+    // Read from html attribute set by FOUC script
+    const current = document.documentElement.getAttribute('data-theme') as Theme | null
+    if (current === 'light' || current === 'dark') setThemeState(current)
   }, [])
 
-  useEffect(() => {
-    const root = document.documentElement
-    if (theme === 'dark') {
-      root.classList.add('dark')
-    } else if (theme === 'light') {
-      root.classList.remove('dark')
-    } else {
-      // auto
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      root.classList.toggle('dark', isDark)
-    }
-    localStorage.setItem('cockpit-theme', theme)
-  }, [theme])
+  const setTheme = (t: Theme) => {
+    setThemeState(t)
+    document.documentElement.setAttribute('data-theme', t)
+    localStorage.setItem('cockpit-theme', t)
+  }
 
-  const setTheme = (t: Theme) => setThemeState(t)
+  const toggle = () => setTheme(theme === 'dark' ? 'light' : 'dark')
 
-  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
+  return <ThemeContext.Provider value={{ theme, setTheme, toggle }}>{children}</ThemeContext.Provider>
 }
-
 export const useTheme = () => useContext(ThemeContext)

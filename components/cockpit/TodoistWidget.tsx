@@ -1,14 +1,20 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { CheckSquare, RefreshCw } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import type { TodoistTask } from '@/types'
 
-const PRIORITY_COLORS: Record<number, string> = {
-  4: 'bg-red-500',
-  3: 'bg-orange-400',
-  2: 'bg-blue-400',
-  1: 'bg-muted-foreground/40',
+function priorityColor(p: number) {
+  if (p === 4) return 'var(--priority-1)'
+  if (p === 3) return 'var(--priority-2)'
+  return 'var(--priority-3)'
+}
+
+function priorityLabel(p: number) {
+  if (p === 4) return 'PRIORITY 1'
+  if (p === 3) return 'PRIORITY 2'
+  if (p === 2) return 'PRIORITY 3'
+  return 'PRIORITY 4'
 }
 
 export function TodoistWidget() {
@@ -28,36 +34,43 @@ export function TodoistWidget() {
   useEffect(() => { fetchTasks() }, [])
 
   return (
-    <div className="rounded-lg border border-border p-3">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <CheckSquare size={14} className="text-red-500" />
-          <h3 className="text-sm font-semibold">Todoist · сегодня</h3>
-          <span className="text-xs bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">{tasks.length}</span>
+    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', padding: 'var(--space-card)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: 'var(--text-label)', textTransform: 'uppercase' }}>Todoist · сегодня</span>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', background: 'var(--bg-tile)', padding: '1px 7px', borderRadius: 999 }}>{tasks.length}</span>
         </div>
-        <button onClick={fetchTasks} className="p-1 rounded hover:bg-accent text-muted-foreground" disabled={loading}>
+        <button
+          onClick={fetchTasks}
+          disabled={loading}
+          style={{ padding: 4, borderRadius: 6, background: 'var(--bg-tile)', border: '1px solid var(--border-default)', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+        >
           <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
         </button>
       </div>
-      {/* max-height 320px */}
-      <div className="space-y-1.5 overflow-y-auto" style={{ maxHeight: '320px' }}>
+
+      <div style={{ maxHeight: 320, overflowY: 'auto' }}>
         {tasks.map((task) => (
-          <div key={task.id} className="flex items-start gap-2">
-            <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${PRIORITY_COLORS[task.priority] ?? PRIORITY_COLORS[1]}`} />
-            <div className="flex-1 min-w-0">
-              <div className="text-xs leading-tight">{task.content}</div>
+          <div key={task.id} style={{ display: 'flex', gap: 10, padding: '10px 0', borderBottom: '1px solid var(--border-default)' }}>
+            {/* priority circle - outlined */}
+            <div style={{ width: 14, height: 14, borderRadius: '50%', border: `2px solid ${priorityColor(task.priority)}`, flexShrink: 0, marginTop: 2 }} />
+            <div>
+              <div style={{ fontSize: 13, color: 'var(--text-primary)' }}>{task.content}</div>
               {task.project_name && (
-                <div className="text-xs text-muted-foreground">{task.project_name}</div>
+                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: priorityColor(task.priority), marginTop: 2 }}>
+                  {priorityLabel(task.priority)} · {task.project_name}
+                </div>
               )}
             </div>
           </div>
         ))}
         {tasks.length === 0 && !loading && (
-          <div className="text-xs text-muted-foreground text-center py-3">Задач на сегодня нет</div>
+          <div style={{ fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', padding: '24px 0' }}>Задач на сегодня нет</div>
         )}
       </div>
+
       {updatedAt && (
-        <div className="text-xs text-muted-foreground mt-2">
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 10 }}>
           Обновлено: {new Date(updatedAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
         </div>
       )}

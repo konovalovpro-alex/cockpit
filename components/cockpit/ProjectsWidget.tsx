@@ -1,34 +1,28 @@
 'use client'
 
-import { BarChart2 } from 'lucide-react'
-
 const PROJECTS = [
-  { name: 'site-analyzer', progress: 70, color: 'var(--bar-purple)' },
-  { name: 'assistant',     progress: 45, color: 'var(--bar-teal)' },
-  { name: 'advisor-app',   progress: 30, color: 'var(--bar-coral)' },
+  { name: 'site-analyzer', progress: 70, color: 'var(--progress-purple)' },
+  { name: 'assistant',     progress: 45, color: 'var(--progress-teal)' },
+  { name: 'advisor-app',   progress: 30, color: 'var(--progress-coral)' },
 ]
 
 export function ProjectsWidget() {
   return (
-    <div className="rounded-lg border border-border p-3">
-      <div className="flex items-center gap-2 mb-3">
-        <BarChart2 size={14} className="text-muted-foreground" />
-        <h3 className="text-sm font-semibold">Активные проекты</h3>
-        <span className="text-xs bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">MVP · заглушка</span>
+    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', padding: 'var(--space-card)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: 'var(--text-label)', textTransform: 'uppercase' }}>Активные проекты</span>
+        <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', background: 'var(--bg-tile)', border: '1px solid var(--border-default)', borderRadius: 999, padding: '2px 8px', letterSpacing: '0.05em' }}>MVP · PLACEHOLDER</span>
       </div>
-      <div className="space-y-2.5">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {PROJECTS.map((p) => (
           <div key={p.name}>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-muted-foreground">{p.name}</span>
-              <span className="text-xs text-muted-foreground">{p.progress}%</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+              <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{p.name}</span>
+              <span style={{ fontSize: 12, color: 'var(--text-muted)', tabularNums: true } as React.CSSProperties}>{p.progress}%</span>
             </div>
-            {/* height: 3px — thin bars */}
-            <div className="h-[3px] rounded-full bg-muted overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all"
-                style={{ width: `${p.progress}%`, backgroundColor: p.color }}
-              />
+            {/* 3px thin bar */}
+            <div style={{ height: 3, borderRadius: 999, background: 'var(--bg-tile)', overflow: 'hidden' }}>
+              <div style={{ height: '100%', borderRadius: 999, width: `${p.progress}%`, background: p.color, transition: 'width 0.6s ease' }} />
             </div>
           </div>
         ))}

@@ -5,6 +5,14 @@ import { ExternalLink, Plus, Pencil, Trash2, X } from 'lucide-react'
 import type { Link, Tag } from '@/types'
 import { useSpaceContext } from './SpaceContext'
 
+function getFavicon(url: string) {
+  try { return `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=32` } catch { return '' }
+}
+
+function getHostname(url: string) {
+  try { return new URL(url).hostname } catch { return url }
+}
+
 function LinkForm({ initial, onSave, onClose }: {
   initial?: Partial<Link>
   onSave: (data: Omit<Partial<Link>, 'tags'> & { tags: string[] }) => Promise<void>
@@ -27,34 +35,45 @@ function LinkForm({ initial, onSave, onClose }: {
     setSaving(false)
   }
 
+  const inputStyle = {
+    width: '100%',
+    padding: '8px 12px',
+    fontSize: 13,
+    background: 'var(--bg-tile)',
+    border: '1px solid var(--border-default)',
+    borderRadius: 8,
+    color: 'var(--text-primary)',
+    outline: 'none',
+  }
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)' }} onClick={onClose}>
       <form
-        className="bg-background border border-border rounded-xl p-5 w-full max-w-md shadow-xl"
+        style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', padding: 20, width: '100%', maxWidth: 420, boxShadow: '0 8px 40px rgba(0,0,0,0.4)' }}
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
       >
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-sm">{initial?.id ? 'Редактировать ссылку' : 'Добавить ссылку'}</h2>
-          <button type="button" onClick={onClose}><X size={16} /></button>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{initial?.id ? 'Редактировать ссылку' : 'Добавить ссылку'}</h2>
+          <button type="button" onClick={onClose} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}><X size={16} /></button>
         </div>
-        <div className="space-y-3">
-          <input required value={url} onChange={(e) => setUrl(e.target.value)} placeholder="URL *" className="w-full px-3 py-2 text-sm border border-input rounded-md bg-background outline-none focus:ring-1 ring-ring" />
-          <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Название *" className="w-full px-3 py-2 text-sm border border-input rounded-md bg-background outline-none focus:ring-1 ring-ring" />
-          <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Описание" className="w-full px-3 py-2 text-sm border border-input rounded-md bg-background outline-none focus:ring-1 ring-ring" />
-          <div className="flex gap-2">
-            <input value={icon} onChange={(e) => setIcon(e.target.value)} placeholder="Иконка (буквы)" className="flex-1 px-3 py-2 text-sm border border-input rounded-md bg-background outline-none focus:ring-1 ring-ring" />
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-9 border border-input rounded-md cursor-pointer" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <input required value={url} onChange={(e) => setUrl(e.target.value)} placeholder="URL *" style={inputStyle} />
+          <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Название *" style={inputStyle} />
+          <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Описание" style={inputStyle} />
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input value={icon} onChange={(e) => setIcon(e.target.value)} placeholder="Иконка (буквы)" style={{ ...inputStyle, flex: 1 }} />
+            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} style={{ width: 40, height: 36, border: '1px solid var(--border-default)', borderRadius: 8, cursor: 'pointer', background: 'var(--bg-tile)' }} />
           </div>
-          <input value={tagInput} onChange={(e) => setTagInput(e.target.value)} placeholder="Теги (через запятую)" className="w-full px-3 py-2 text-sm border border-input rounded-md bg-background outline-none focus:ring-1 ring-ring" />
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
-            <input type="checkbox" checked={isPinned} onChange={(e) => setIsPinned(e.target.checked)} className="rounded" />
+          <input value={tagInput} onChange={(e) => setTagInput(e.target.value)} placeholder="Теги (через запятую)" style={inputStyle} />
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, cursor: 'pointer', color: 'var(--text-secondary)' }}>
+            <input type="checkbox" checked={isPinned} onChange={(e) => setIsPinned(e.target.checked)} />
             Закрепить в пинах
           </label>
         </div>
-        <div className="flex justify-end gap-2 mt-4">
-          <button type="button" onClick={onClose} className="px-3 py-1.5 text-sm border border-input rounded-md hover:bg-accent">Отмена</button>
-          <button type="submit" disabled={saving} className="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50">
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+          <button type="button" onClick={onClose} style={{ padding: '7px 14px', fontSize: 13, background: 'var(--bg-tile)', border: '1px solid var(--border-default)', borderRadius: 8, color: 'var(--text-secondary)', cursor: 'pointer' }}>Отмена</button>
+          <button type="submit" disabled={saving} style={{ padding: '7px 14px', fontSize: 13, background: 'var(--accent)', border: 'none', borderRadius: 8, color: 'var(--accent-on)', cursor: 'pointer', opacity: saving ? 0.6 : 1 }}>
             {saving ? 'Сохранение...' : 'Сохранить'}
           </button>
         </div>
@@ -124,26 +143,28 @@ export function LinksBlock() {
   }
 
   return (
-    <div className="flex-1 min-h-0">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <h2 className="text-sm font-semibold">Все ссылки</h2>
-          <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">{displayedLinks.length}</span>
+    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', padding: 'var(--space-card)' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: 'var(--text-label)', textTransform: 'uppercase' }}>Все ссылки</span>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', background: 'var(--bg-tile)', padding: '1px 7px', borderRadius: 999 }}>{displayedLinks.length}</span>
         </div>
         <button
           onClick={() => { setEditLink(undefined); setShowForm(true) }}
-          className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+          style={{ width: 24, height: 24, borderRadius: 6, background: 'var(--bg-tile)', border: '1px solid var(--border-default)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
           title="Добавить ссылку"
         >
-          <Plus size={14} />
+          <Plus size={13} />
         </button>
       </div>
 
+      {/* Tag filters */}
       {tags.length > 0 && (
-        <div className="flex gap-1.5 flex-wrap mb-3">
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
           <button
             onClick={() => setActiveTag(null)}
-            className={`px-2 py-0.5 rounded-full text-xs transition-colors ${!activeTag ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'}`}
+            style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, cursor: 'pointer', background: !activeTag ? 'var(--accent)' : 'transparent', border: `1px solid ${!activeTag ? 'var(--accent)' : 'var(--border-default)'}`, color: !activeTag ? 'var(--accent-on)' : 'var(--text-muted)', transition: 'all 0.15s' }}
           >
             Все
           </button>
@@ -151,7 +172,7 @@ export function LinksBlock() {
             <button
               key={tag.id}
               onClick={() => setActiveTag(activeTag === tag.id ? null : tag.id)}
-              className={`px-2 py-0.5 rounded-full text-xs transition-colors ${activeTag === tag.id ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'}`}
+              style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, cursor: 'pointer', background: activeTag === tag.id ? 'var(--accent)' : 'transparent', border: `1px solid ${activeTag === tag.id ? 'var(--accent)' : 'var(--border-default)'}`, color: activeTag === tag.id ? 'var(--accent-on)' : 'var(--text-muted)', transition: 'all 0.15s' }}
             >
               {tag.name}
             </button>
@@ -159,34 +180,44 @@ export function LinksBlock() {
         </div>
       )}
 
-      <div className="space-y-1 overflow-y-auto max-h-80">
+      {/* Links list */}
+      <div style={{ maxHeight: 360, overflowY: 'auto' }} className="scroll-fade">
         {displayedLinks.map((link) => (
-          <div key={link.id} className="group flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent transition-colors">
-            <div
-              className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-              style={{ backgroundColor: link.color || '#6366f1' }}
-            >
-              {link.icon || link.name.slice(0, 1).toUpperCase()}
-            </div>
-            <a href={link.url} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-0">
-              <div className="text-sm truncate">{link.name}</div>
-              {link.description && <div className="text-xs text-muted-foreground truncate">{link.description}</div>}
+          <div key={link.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0', borderBottom: '1px solid var(--border-default)', cursor: 'pointer' }} className="group">
+            <img
+              src={getFavicon(link.url)}
+              width={20}
+              height={20}
+              alt=""
+              style={{ borderRadius: 4, flexShrink: 0 }}
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+            />
+            <a href={link.url} target="_blank" rel="noopener noreferrer" style={{ flex: 1, minWidth: 0, textDecoration: 'none' }}>
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{link.name}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{getHostname(link.url)}</div>
             </a>
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <a href={link.url} target="_blank" rel="noopener noreferrer" className="p-1 rounded hover:bg-muted text-muted-foreground">
-                <ExternalLink size={12} />
+            {/* tag badge */}
+            {(link.tags as Tag[] | undefined)?.[0] && (
+              <span style={{ fontSize: 10, color: 'var(--text-muted)', background: 'var(--bg-tile)', border: '1px solid var(--border-default)', borderRadius: 999, padding: '2px 7px', flexShrink: 0 }}>
+                {(link.tags as Tag[])[0].name}
+              </span>
+            )}
+            {/* action buttons */}
+            <div style={{ display: 'flex', gap: 4, opacity: 0, transition: 'opacity 0.15s', flexShrink: 0 }} className="group-hover:opacity-100">
+              <a href={link.url} target="_blank" rel="noopener noreferrer" style={{ padding: 4, borderRadius: 4, color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
+                <ExternalLink size={11} />
               </a>
-              <button onClick={() => { setEditLink(link); setShowForm(true) }} className="p-1 rounded hover:bg-muted text-muted-foreground">
-                <Pencil size={12} />
+              <button onClick={() => { setEditLink(link); setShowForm(true) }} style={{ padding: 4, borderRadius: 4, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                <Pencil size={11} />
               </button>
-              <button onClick={() => handleDelete(link.id)} className="p-1 rounded hover:bg-muted text-red-500">
-                <Trash2 size={12} />
+              <button onClick={() => handleDelete(link.id)} style={{ padding: 4, borderRadius: 4, color: 'var(--priority-1)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                <Trash2 size={11} />
               </button>
             </div>
           </div>
         ))}
         {displayedLinks.length === 0 && (
-          <div className="text-sm text-muted-foreground text-center py-6">
+          <div style={{ fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', padding: '24px 0' }}>
             Нет ссылок. Добавьте первую!
           </div>
         )}
