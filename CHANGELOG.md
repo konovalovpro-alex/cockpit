@@ -5,6 +5,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/)
 
 ## [Unreleased]
 
+### Changed (UI раунд 3 — полировка и интерактив)
+- **Fullscreen layout**: `html, body` — `height: 100vh; overflow: hidden`, все скроллбары скрыты глобально (`scrollbar-width: none`, `::-webkit-scrollbar { display: none }`)
+- **page.tsx**: TopBar и ContextBar — `flexShrink: 0`; main-область — `flex: 1; minHeight: 0`. Левая колонка: PinsBlock shrink-0, LinksBlock `flex: 1` (растягивается), SpacesBlock shrink-0. Правая колонка: TodoistWidget и NotionWidget — `flex: 1`, ProjectsWidget и ServerWidget — `flexShrink: 0`
+- **LinksBlock, TodoistWidget, NotionWidget**: убран фиксированный `maxHeight`, добавлен `height: 100%; display: flex; flexDirection: column` на карточке; список — `flex: 1; minHeight: 0; overflowY: auto`
+- **Dark theme bg**: `--bg-page: #0B0A12`, `--bg-card: #11101A`, `--bg-card-hover / --bg-tile: #16151F`
+- **Тинты карточек**: добавлены CSS-переменные `--tint-*` (градиент 4% opacity) и `--border-*` (цветные бордеры) для всех 7 карточек. Light-тема — 0.025 opacity
+- **LinksBlock активный тег**: при `activeTag === tag.id` фон и бордер теперь `var(--accent)` (индиго) вместо цвета тега
+- **ContextBar**: название пространства — `fontSize: 16px; fontWeight: 500`; кнопка «Открыть всё в вкладках» — `border: 1px solid var(--accent)`, прозрачный фон, на hover заполняется акцентом (CSS-класс `.open-all-btn:hover`)
+- **POST /api/todoist/close**: закрывает задачу в Todoist REST v2, убирает из SQLite-кэша
+- **POST /api/notion/complete-task**: патчит статус страницы Notion на «Готово» через PATCH /v1/pages/{id}
+- **TodoistWidget**: клик на outlined-кружок приоритета — оптимистичное удаление с анимацией fade-out + translateX(-8px) 200ms, toast при ошибке (sonner)
+- **NotionWidget**: клик на Square-иконку — Square → CheckSquare, то же fade-out + toast при ошибке
+- **Todoist пресеты**: 5 фильтров (Сегодня / P1 / Inbox / Неделя / Все), 4 новые SQLite-таблицы (`cache_todoist_p1/inbox/week/all`), cron синхронизирует все пресеты, новый роут `GET /api/todoist/tasks?preset=X`, пресет сохраняется в `localStorage`
+- **sonner**: установлен пакет, `<Toaster richColors position="bottom-right" />` добавлен в `app/layout.tsx`
+
 ### Changed (UI раунд 2 — Stitch redesign)
 - Inter font (400/500/600) via `next/font/google` с поддержкой кириллицы
 - Полный переезд `theme.css`: dark (#0A0A0B) + light (#F2F2F7), токены `--bg-*`, `--text-*`, `--accent`, `--priority-*`, `--progress-*`
