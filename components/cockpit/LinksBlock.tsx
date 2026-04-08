@@ -143,7 +143,7 @@ export function LinksBlock() {
   }
 
   return (
-    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', padding: 'var(--space-card)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', padding: 'var(--space-card)', boxSizing: 'border-box' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -168,20 +168,30 @@ export function LinksBlock() {
           >
             Все
           </button>
-          {tags.map((tag) => (
-            <button
-              key={tag.id}
-              onClick={() => setActiveTag(activeTag === tag.id ? null : tag.id)}
-              style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, cursor: 'pointer', background: activeTag === tag.id ? 'var(--accent)' : 'transparent', border: `1px solid ${activeTag === tag.id ? 'var(--accent)' : 'var(--border-default)'}`, color: activeTag === tag.id ? 'var(--accent-on)' : 'var(--text-muted)', transition: 'all 0.15s' }}
-            >
-              {tag.name}
-            </button>
-          ))}
+          {tags.map((tag) => {
+            const isActive = activeTag === tag.id
+            const tagColor = tag.color || 'var(--accent)'
+            return (
+              <button
+                key={tag.id}
+                onClick={() => setActiveTag(isActive ? null : tag.id)}
+                style={{
+                  padding: '3px 10px', borderRadius: 999, fontSize: 11, cursor: 'pointer',
+                  background: isActive ? tagColor : 'transparent',
+                  border: `1px solid ${isActive ? tagColor : tag.color || 'var(--border-default)'}`,
+                  color: isActive ? '#fff' : tag.color || 'var(--text-muted)',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {tag.name}
+              </button>
+            )
+          })}
         </div>
       )}
 
       {/* Links list */}
-      <div style={{ maxHeight: 360, overflowY: 'auto' }} className="scroll-fade">
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }} className="scroll-fade">
         {displayedLinks.map((link) => (
           <div key={link.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0', borderBottom: '1px solid var(--border-default)', cursor: 'pointer' }} className="group">
             <img
@@ -196,12 +206,25 @@ export function LinksBlock() {
               <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{link.name}</div>
               <div style={{ fontSize: 11, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{getHostname(link.url)}</div>
             </a>
-            {/* tag badge */}
-            {(link.tags as Tag[] | undefined)?.[0] && (
-              <span style={{ fontSize: 10, color: 'var(--text-muted)', background: 'var(--bg-tile)', border: '1px solid var(--border-default)', borderRadius: 999, padding: '2px 7px', flexShrink: 0 }}>
-                {(link.tags as Tag[])[0].name}
-              </span>
-            )}
+            {/* tag badges */}
+            <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+              {(link.tags as Tag[] | undefined)?.slice(0, 2).map((tag) => (
+                <span
+                  key={tag.id}
+                  style={{
+                    fontSize: 10,
+                    borderRadius: 999,
+                    padding: '2px 7px',
+                    flexShrink: 0,
+                    color: tag.color || 'var(--text-muted)',
+                    background: tag.color ? `${tag.color}18` : 'var(--bg-tile)',
+                    border: `1px solid ${tag.color ? `${tag.color}40` : 'var(--border-default)'}`,
+                  }}
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
             {/* action buttons */}
             <div style={{ display: 'flex', gap: 4, opacity: 0, transition: 'opacity 0.15s', flexShrink: 0 }} className="group-hover:opacity-100">
               <a href={link.url} target="_blank" rel="noopener noreferrer" style={{ padding: 4, borderRadius: 4, color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>

@@ -31,8 +31,8 @@ export function PinsBlock() {
   useEffect(() => { fetch('/api/links?pinned=1').then(r => r.json()).then(setPins).catch(() => {}) }, [])
   if (pins.length === 0) return null
   return (
-    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', padding: 'var(--space-card)' }}>
-      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: 'var(--text-label)', textTransform: 'uppercase', marginBottom: 14 }}>Pinned</div>
+    <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', padding: 'var(--space-card)' }}>
+      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: 'var(--text-label)', textTransform: 'uppercase', marginBottom: 14, flexShrink: 0 }}>Pinned</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
         {pins.map(link => <PinTile key={link.id} link={link} />)}
       </div>
