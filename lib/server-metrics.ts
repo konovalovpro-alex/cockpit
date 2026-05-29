@@ -17,7 +17,7 @@ interface MetricRow {
 async function fetchChart(chart: string): Promise<NetdataData | null> {
   try {
     const res = await fetch(
-      `${NETDATA_URL}/api/v1/data?chart=${chart}&after=-60&points=1&group=average&format=json`,
+      `${NETDATA_URL}/api/v1/data?chart=${encodeURIComponent(chart)}&after=-60&points=1&group=average&format=json`,
       { signal: AbortSignal.timeout(5000) }
     )
     if (!res.ok) return null
@@ -40,9 +40,21 @@ function round2(n: number) {
 async function collectCpu(): Promise<MetricRow[]> {
   const d = await fetchChart('system.cpu')
   if (!d) return []
+
+  // Newer Netdata: no "idle" dimension — all shown dimensions ARE the usage
   const idle = val(d.labels, d.data, 'idle')
-  if (idle === null) return []
-  return [{ metric: 'cpu_percent', scope: '', value: round2(100 - idle), unit: '%' }]
+  let cpuPct: number
+  if (idle !== null) {
+    cpuPct = 100 - idle
+  } else {
+    // Sum all non-time dimensions
+    const sum = d.labels.slice(1).reduce((acc, label, i) => {
+      const v = d.data[0]?.[i + 1] ?? 0
+      return acc + Math.abs(v)
+    }, 0)
+    cpuPct = sum
+  }
+  return [{ metric: 'cpu_percent', scope: '', value: round2(Math.min(cpuPct, 100)), unit: '%' }]
 }
 
 async function collectLoad(): Promise<MetricRow[]> {
@@ -59,6 +71,7 @@ async function collectLoad(): Promise<MetricRow[]> {
 async function collectRam(): Promise<MetricRow[]> {
   const d = await fetchChart('system.ram')
   if (!d) return []
+  // Values in MiB
   const used = val(d.labels, d.data, 'used') ?? 0
   const free = val(d.labels, d.data, 'free') ?? 0
   const cached = val(d.labels, d.data, 'cached') ?? 0
@@ -86,30 +99,28 @@ async function collectNetwork(): Promise<MetricRow[]> {
   const d = await fetchChart('system.net')
   if (!d) return []
   const rows: MetricRow[] = []
+  // Values in kilobits/s; sent is negative (outbound)
   const received = val(d.labels, d.data, 'received')
   const sent = val(d.labels, d.data, 'sent')
-  // Netdata net values are in kilobits/s; negative means outbound on some systems
   if (received !== null) rows.push({ metric: 'net_in_mbps', scope: '', value: round2(Math.abs(received) / 1000), unit: 'Mbps' })
   if (sent !== null) rows.push({ metric: 'net_out_mbps', scope: '', value: round2(Math.abs(sent) / 1000), unit: 'Mbps' })
   return rows
 }
 
 function chartToMount(chart: string): string {
-  // disk_space._ → /   disk_space._boot → /boot   disk_space._mnt_data → /mnt/data
-  const suffix = chart.replace('disk_space.', '')
-  if (suffix === '_') return '/'
-  return suffix.replace(/^_/, '/').replace(/_/g, '/')
+  // disk_space./ → /    disk_space./boot → /boot
+  return chart.replace('disk_space.', '') || '/'
 }
 
 async function discoverDiskCharts(): Promise<string[]> {
   try {
     const res = await fetch(`${NETDATA_URL}/api/v1/charts`, { signal: AbortSignal.timeout(5000) })
-    if (!res.ok) return ['disk_space._']
+    if (!res.ok) return ['disk_space./']
     const body = await res.json()
     const charts: string[] = Object.keys(body.charts ?? {}).filter((c: string) => c.startsWith('disk_space.'))
-    return charts.length > 0 ? charts : ['disk_space._']
+    return charts.length > 0 ? charts : ['disk_space./']
   } catch {
-    return ['disk_space._']
+    return ['disk_space./']
   }
 }
 
@@ -122,9 +133,10 @@ async function collectDisks(): Promise<MetricRow[]> {
     const d = await fetchChart(chart)
     if (!d) continue
 
+    // Values in GiB; "reserved for root" label has spaces
     const used = val(d.labels, d.data, 'used') ?? 0
     const avail = val(d.labels, d.data, 'avail') ?? 0
-    const reserved = val(d.labels, d.data, 'reserved_for_root') ?? 0
+    const reserved = val(d.labels, d.data, 'reserved for root') ?? 0
     const total = used + avail + reserved
     if (total === 0) continue
 
