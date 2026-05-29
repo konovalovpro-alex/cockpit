@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/)
 
 ## [Unreleased]
 
+### Added (Netdata · виджет Сервер — S2/S3)
+- `lib/server-metrics.ts` — сборщик метрик Netdata: CPU, load, RAM, swap, диски (авто-дискавери), сеть
+- `lib/db.ts` — 3 новые таблицы: `cache_server_metrics`, `server_metrics_history`, `server_metrics_log` + индексы
+- `instrumentation.ts` — cron сбора метрик каждые `SERVER_POLL_MINUTES` + суточная очистка истории (TTL 90 дней)
+- `GET /api/server` — чтение среза `cache_server_metrics` для виджета
+- `GET /api/server/alerts` — проксирует `/api/v1/alarms` Netdata, возвращает `{total, critical, warning}`
+- `POST /api/cron/server` — ручной триггер сбора метрик для отладки
+- `ServerWidget` — живые данные вместо заглушки: прогресс-бары диска (×N разделов), CPU/RAM/Swap/Load, сеть ↑↓, бейдж алертов, индикатор устаревших данных (3×poll)
+- `docker-compose.yml` — `extra_hosts: host.docker.internal:host-gateway`
+- `.env` — `NETDATA_URL`, `SERVER_POLL_MINUTES`, `NEXT_PUBLIC_SERVER_POLL_MINUTES`
+
 ### Added (CRUD · раунд 4)
 - PUT /api/links/[id] — редактирование ссылки с пересчётом тегов (транзакция)
 - DELETE /api/links/[id] — удаление с возвратом объекта для undo

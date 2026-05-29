@@ -113,10 +113,40 @@ function migrate(db: Database.Database) {
       data TEXT NOT NULL,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS cache_server_metrics (
+      metric      TEXT    NOT NULL,
+      scope       TEXT    NOT NULL DEFAULT '',
+      value       REAL    NOT NULL,
+      unit        TEXT,
+      updated_at  INTEGER NOT NULL,
+      PRIMARY KEY (metric, scope)
+    );
+
+    CREATE TABLE IF NOT EXISTS server_metrics_history (
+      id      INTEGER PRIMARY KEY AUTOINCREMENT,
+      ts      INTEGER NOT NULL,
+      metric  TEXT    NOT NULL,
+      scope   TEXT    NOT NULL DEFAULT '',
+      value   REAL    NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS server_metrics_log (
+      id       INTEGER PRIMARY KEY AUTOINCREMENT,
+      run_ts   INTEGER NOT NULL,
+      status   TEXT    NOT NULL,
+      written  INTEGER DEFAULT 0,
+      error    TEXT
+    );
   `)
 
   // Initialize preset cache rows
   for (const table of ['cache_todoist_p1', 'cache_todoist_inbox', 'cache_todoist_week', 'cache_todoist_all']) {
     db.prepare(`INSERT OR IGNORE INTO ${table} (id, data, updated_at) VALUES (1, '[]', datetime('now'))`).run()
   }
+
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_smh_lookup ON server_metrics_history(metric, scope, ts DESC);
+    CREATE INDEX IF NOT EXISTS idx_smh_ts     ON server_metrics_history(ts);
+  `)
 }
